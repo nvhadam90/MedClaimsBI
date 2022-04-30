@@ -1,0 +1,120 @@
+{% extends 'base.html'%}
+
+{%block claimtable%}
+<div class="w3-half">
+
+  <h5>Claims Summary</h5>
+  <table class="w3-table w3-striped w3-white">
+    <tr>
+      <td><i class="fa fa-user w3-text-blue w3-large"></i></td>
+      <td>Number of Claims</td>
+      <td><i>{{ totalclaims|safe }}</i></td>
+    </tr>
+    <tr>
+      <td><i class="fa fa-bell w3-text-red w3-large"></i></td>
+      <td>Total Billed Amount</td>
+      <td><i>${{totalbilled|safe}}</i></td>
+    </tr>
+    <tr>
+      <td><i class="fa fa-users w3-text-yellow w3-large"></i></td>
+      <td>Total Savings Amount</td>
+      <td><i>${{totaldiscount|safe}}</i></td>
+    </tr>
+    <tr>
+      <td><i class="fa fa-comment w3-text-red w3-large"></i></td>
+      <td>Most Common Diagnosis Code</td>
+      <td><i>{{commondx|safe}}</i></td>
+    </tr>
+    <tr>
+      <td><i class="fa fa-bookmark w3-text-blue w3-large"></i></td>
+      <td>Most Common Provider</td>
+      <td><i>{{commonprovider|safe}}</i></td>
+    </tr>
+    
+  </table>
+</div>
+{%endblock claimtable%}
+
+{%block scripts%}
+<script>
+$(function(){
+  var $claimtypeChart = $('#myBar');
+  $.ajax({
+        url: $claimtypeChart.data("url"),
+        success: function (data) {
+
+          var ctx = $claimtypeChart[0].getContext("2d");
+
+          new Chart(ctx, {
+            type: 'pie',
+            data: {
+              labels: data.labels,
+              datasets: [{
+                label: 'Number of Claims',
+                data: data.data,
+                backgroundColor: ['rgba(39, 114, 245, 0.8)', 'rgba(245, 39, 39, 0.8)'],
+              }]          
+            },
+            options: {
+              title: {
+                display: 'true',
+                text: 'Total Claims for each Claim Type'
+              }
+            }
+          });
+
+        }
+      });
+});
+$(function(){
+  var $claimtypeChart = $('#myBillBar');
+  $.ajax({
+        url: $claimtypeChart.data("url"),
+        success: function (data) {
+
+          var ctx = $claimtypeChart[0].getContext("2d");
+
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: data.labels,
+              datasets: [{
+                label: 'Number of Claims',
+                data: data.data,
+                backgroundColor: ['rgba(39, 114, 245, 0.8)', 'rgba(245, 39, 39, 0.8)'],
+              }]          
+            },
+            options: {
+              scales: {
+                yAxes: [{
+                    ticks:{
+                        min: 0,
+                        max: data.datamax + 1000
+                    }
+                }]
+              },
+              title: {
+                display: 'true',
+                text: 'Total Billed Amounts for each Claim Type'
+              }
+            }
+          });
+
+        }
+      });
+});
+
+</script>
+{%endblock scripts%}
+
+{%block pie%}
+<canvas id="myBar" width="75" height="75" data-url="{% url 'barchart' %}"></canvas>
+{%endblock pie%}
+
+{%block chart%}
+<!-- displaying the chart -->
+<!-- you can also play around with the width and height to increase or decrease the chart size -->
+<!-- <div><canvas id="myChart" width="400" height="100"></canvas></div> -->
+<!-- <div><canvas id="myBar" width="400" height="100" data-url="{% url 'barchart' %}"></canvas></div> -->
+<div><canvas id="myBillBar" width="400" height="100" data-url="{% url 'barbillchart' %}"></canvas></div>
+{%endblock chart%}
