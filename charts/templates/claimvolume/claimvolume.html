@@ -1,0 +1,111 @@
+{% extends 'base.html'%}
+
+{%block content %}
+
+
+<h4>Claim Volume Over Time</h4>
+<label for="year">Choose a Year:</label>
+<form id="claimYear">
+    <select name="year" id="year">
+        {% for year in yearslisted %}
+            <option  value="{{ year }}">{{ year }}</option>
+        {% endfor %}
+    </select>
+    <input type="submit" value="Load" name="_load">
+</form>
+
+<div><canvas id="claimVolumeLine" width="400" height="200" ></canvas>
+    <canvas id="claimCountLine" width="400" height="200" ></canvas>
+    <!-- <canvas id="myBillBar" width="400" height="100" data-url="barchart/{{providerID}}"></canvas>
+    <canvas id="myAvgBar" width="400" height="100" data-url="barchart/{{providerID}}"></canvas> -->
+</div>
+
+
+{% endblock content%}  
+
+{%block scripts%}
+<script>
+ $(document).ready(function(){
+     
+    // loadCharts(2020);
+    loadCharts($("#year").children().first().val());
+ });
+
+$("#claimYear").on("submit", (event) => {
+    event.preventDefault();
+    $year = $("#year").val();
+    $year = parseInt($year);
+    console.log($year+ " " + typeof($year));
+
+    loadCharts($year);
+});
+
+function loadCharts(year){
+  var $claimVolumeLine = $('#claimVolumeLine');
+  var $claimCountLine = $('#claimCountLine');
+  var $url = "linechart/"+ year
+  $.ajax({
+        url: $url,
+        success: function (data) {
+
+          var ctx = $claimVolumeLine[0].getContext("2d");
+
+          new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: data.labels,
+              datasets: [{
+                label: 'Dollar Amount',
+                data: data.data,
+                backgroundColor: ['rgba(39, 114, 245, 0.8)', 'rgba(245, 39, 39, 0.8)'],
+              }]          
+            },
+            options: {
+              title: {
+                display: 'true',
+                text: 'Monthly Claim Volume for year 2021'
+              }
+            }
+          });
+
+        }
+      });
+      
+      $.ajax({
+        url: $url,
+        success: function (data) {
+
+          var ctx2 = $claimCountLine[0].getContext("2d");
+
+          new Chart(ctx2, {
+            type: 'line',
+            data: {
+              labels: data.countlabels,
+              datasets: [{
+                label: 'Number of Claims',
+                data: data.countdata,
+                backgroundColor: ['rgba(39, 114, 245, 0.8)', 'rgba(245, 39, 39, 0.8)'],
+              }]          
+            },
+            options: {
+              title: {
+                display: 'true',
+                text: 'Monthly Claim Volume for year 2021'
+              },
+              scales: {
+                yAxes: [{
+                    ticks:{
+                        min: 0,
+                        stepSize: 1
+                    }
+                }]
+              },
+            }
+          });
+
+        }
+      });
+};
+
+</script>
+{%endblock scripts%}

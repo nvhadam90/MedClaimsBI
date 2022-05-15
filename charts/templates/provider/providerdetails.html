@@ -1,0 +1,140 @@
+{% extends 'base.html'%}
+
+{%block content %}
+
+    <!-- <div class="w3-row-padding" style="margin:0 -16px"> -->
+
+<table class="w3-table w3-striped w3-white">
+    <tr>
+        <th>Provider Name</th>
+        <th>Tax ID</th>
+        <th>Provider State</th>
+        <th>Provider City</th>
+        <th>Provider Zip</th>
+        <th>Generate Charts</th>
+    </tr>
+    {% for item in allproviders %}
+    <tr> 
+        <td>{{ item.provider_name }}</td>
+        <td>{{ item.tax_ID }}</td>
+        <td>{{ item.state }}</td>
+        <td>{{ item.city }}</td>
+        <td>{{ item.zipcode }}</td>
+        <td id="genChart1"><a href="{{item.provider_id}}">Generate Charts</a> </td>
+    </tr>
+    {% endfor %}
+</table>
+<!-- </div> -->
+<h4><strong>Provider Charts</strong> </h4>
+<h5>Provider Name: {{provider_selected}}</h5> 
+<div><canvas id="provClaimPie" width="400" height="100" data-url="chart/{{providerID}}"></canvas>
+    <canvas id="myBillBar" width="400" height="100" data-url="barchart/{{providerID}}"></canvas>
+    <canvas id="myAvgBar" width="400" height="100" data-url="barchart/{{providerID}}"></canvas>
+</div>
+
+
+{% endblock content%}  
+
+{%block scripts%}
+<script>
+$(function(){
+  var $claimtypeChart = $('#provClaimPie');
+  $.ajax({
+        url: $claimtypeChart.data("url"),
+        success: function (data) {
+
+          var ctx = $claimtypeChart[0].getContext("2d");
+
+          new Chart(ctx, {
+            type: 'pie',
+            data: {
+              labels: data.labels,
+              datasets: [{
+                label: 'Number of Claims',
+                data: data.data,
+                backgroundColor: ['rgba(39, 114, 245, 0.8)', 'rgba(245, 39, 39, 0.8)'],
+              }]          
+            },
+            options: {
+              title: {
+                display: 'true',
+                text: 'Total Claims for each Claim Type'
+              }
+            }
+          });
+
+        }
+      });
+});
+
+$(function(){
+  var $claimtypeChart = $('#myBillBar');
+  var $avgClaimChart = $('#myAvgBar');
+  $.ajax({
+        url: $claimtypeChart.data("url"),
+        success: function (data) {
+
+          var ctx = $claimtypeChart[0].getContext("2d");
+
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: data.labels,
+              datasets: [{
+                label: 'Billed',
+                data: data.data,
+                backgroundColor: ['rgba(39, 114, 245, 0.8)', 'rgba(245, 39, 39, 0.8)'],
+              }]          
+            },
+            options: {
+              scales: {
+                yAxes: [{
+                    ticks:{
+                        min: 0,
+                        max: data.bardatamax + 1000
+                    }
+                }]
+              },
+              title: {
+                display: 'true',
+                text: 'Total Billed and Allowed Amounts for the Provider'
+              }
+            }
+          });
+        }
+      });
+    $.ajax({
+        url: $avgClaimChart.data("url"),
+        success: function (data) {
+            var ctx2 = $avgClaimChart[0].getContext("2d");
+          new Chart(ctx2, {
+            type: 'bar',
+            data: {
+              labels: data.avglabels,
+              datasets: [{
+                label: 'Dollar Amounts',
+                data: data.avgdata,
+                backgroundColor: ['rgba(39, 114, 245, 0.8)', 'rgba(245, 39, 39, 0.8)'],
+              }]          
+            },
+            options: {
+              scales: {
+                yAxes: [{
+                    ticks:{
+                        min: 0,
+                        max: data.avgbardatamax + 1000
+                    }
+                }]
+              },
+              title: {
+                display: 'true',
+                text: 'Average Billed and Discounted Amounts for the Provider'
+              }
+            }
+          });
+        }
+    });
+});
+
+</script>
+{%endblock scripts%}

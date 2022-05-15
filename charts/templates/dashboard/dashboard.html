@@ -1,39 +1,53 @@
 {% extends 'base.html'%}
 
-{%block claimtable%}
-<div class="w3-half">
+{%block content%}
 
-  <h5>Claims Summary</h5>
-  <table class="w3-table w3-striped w3-white">
-    <tr>
-      <td><i class="fa fa-user w3-text-blue w3-large"></i></td>
-      <td>Number of Claims</td>
-      <td><i>{{ totalclaims|safe }}</i></td>
-    </tr>
-    <tr>
-      <td><i class="fa fa-bell w3-text-red w3-large"></i></td>
-      <td>Total Billed Amount</td>
-      <td><i>${{totalbilled|safe}}</i></td>
-    </tr>
-    <tr>
-      <td><i class="fa fa-users w3-text-yellow w3-large"></i></td>
-      <td>Total Savings Amount</td>
-      <td><i>${{totaldiscount|safe}}</i></td>
-    </tr>
-    <tr>
-      <td><i class="fa fa-comment w3-text-red w3-large"></i></td>
-      <td>Most Common Diagnosis Code</td>
-      <td><i>{{commondx|safe}}</i></td>
-    </tr>
-    <tr>
-      <td><i class="fa fa-bookmark w3-text-blue w3-large"></i></td>
-      <td>Most Common Provider</td>
-      <td><i>{{commonprovider|safe}}</i></td>
-    </tr>
+  <div class="w3-row-padding" style="margin:0 -16px">
     
-  </table>
+    <div class="w3-half">
+
+      <h5>Claims Summary</h5>
+      <table class="w3-table w3-striped w3-white">
+        <tr>
+          <td><i class="fa fa-user w3-text-blue w3-large"></i></td>
+          <td>Number of Claims</td>
+          <td><i>{{ totalclaims|safe }}</i></td>
+        </tr>
+        <tr>
+          <td><i class="fa fa-bell w3-text-red w3-large"></i></td>
+          <td>Total Billed Amount</td>
+          <td><i>${{totalbilled|safe}}</i></td>
+        </tr>
+        <tr>
+          <td><i class="fa fa-users w3-text-yellow w3-large"></i></td>
+          <td>Total Savings Amount</td>
+          <td><i>${{totaldiscount|safe}}</i></td>
+        </tr>
+        <tr>
+          <td><i class="fa fa-comment w3-text-red w3-large"></i></td>
+          <td>Most Common Diagnosis Code</td>
+          <td><i>{{commondx|safe}}</i></td>
+        </tr>
+        <tr>
+          <td><i class="fa fa-bookmark w3-text-blue w3-large"></i></td>
+          <td>Most Common Provider</td>
+          <td><i>{{commonprovider|safe}}</i></td>
+        </tr>
+        
+      </table>
+    </div>
+
+    <div class="w3-half">
+      <canvas id="myBar" width="75" height="75" data-url="{% url 'barchart' %}"></canvas>
+    </div>
+
+    <div><canvas id="myBillBar" width="400" height="100" data-url="{% url 'barbillchart' %}"></canvas></div>
 </div>
-{%endblock claimtable%}
+
+
+{%endblock content%}
+
+
 
 {%block scripts%}
 <script>
@@ -107,14 +121,10 @@ $(function(){
 </script>
 {%endblock scripts%}
 
-{%block pie%}
-<canvas id="myBar" width="75" height="75" data-url="{% url 'barchart' %}"></canvas>
-{%endblock pie%}
 
-{%block chart%}
+
+
 <!-- displaying the chart -->
 <!-- you can also play around with the width and height to increase or decrease the chart size -->
 <!-- <div><canvas id="myChart" width="400" height="100"></canvas></div> -->
 <!-- <div><canvas id="myBar" width="400" height="100" data-url="{% url 'barchart' %}"></canvas></div> -->
-<div><canvas id="myBillBar" width="400" height="100" data-url="{% url 'barbillchart' %}"></canvas></div>
-{%endblock chart%}

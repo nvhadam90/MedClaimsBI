@@ -14,14 +14,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.shortcuts import render
 from django.urls import path, include
 from charts.views import EditorChartView
-from charts.views import dashboard_view, get_claimtype_chart
+
 
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', EditorChartView.as_view(), name='index'),
-    path('dashboard/', include('charts.urls')),
+    # path('', EditorChartView.as_view(), name='index'),
+    path('', include('charts.urls')),
 ]

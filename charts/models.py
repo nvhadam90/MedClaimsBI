@@ -17,6 +17,7 @@ class Claims(models.Model):
     billing_provider_ID = models.IntegerField()
     claim_type = models.CharField(max_length=255)
     savings_amount = models.FloatField()
+    received_date = models.DateField(null=True)
 
 class Providers(models.Model):
     provider_id = models.IntegerField()
